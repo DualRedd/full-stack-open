@@ -23,3 +23,13 @@ content-type: application/json
     "name": "Arto Hellas",
     "number": "123-4567890"
 }
+
+
+### Bad Request: Too short name
+POST http://localhost:3001/api/persons HTTP/1.1
+content-type: application/json
+
+{
+    "name": "aa",
+    "number": "123-4567890"
+}

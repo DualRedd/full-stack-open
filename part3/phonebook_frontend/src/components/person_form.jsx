@@ -27,7 +27,7 @@ const NewPersonForm = ({ persons, setPersons }) => {
           setTimeout(() => setSuccessMessage(null), 3000)
         })
         .catch(error => {
-          setErrorMessage(`Failed to update ${person.name}`)
+          setErrorMessage(error.response.data.error || `Failed to update ${person.name}`)
           setTimeout(() => setErrorMessage(null), 3000)
         })
     }
@@ -44,7 +44,7 @@ const NewPersonForm = ({ persons, setPersons }) => {
           setTimeout(() => setSuccessMessage(null), 3000)
         })
         .catch(error => {
-          setErrorMessage(`Failed to add ${person.name}`)
+          setErrorMessage(error.response.data.error || `Failed to add ${person.name}`)
           setTimeout(() => setErrorMessage(null), 3000)
         })
     }
