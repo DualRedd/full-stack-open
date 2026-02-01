@@ -1,4 +1,4 @@
-import mongoose from "mongoose"
+import mongoose from 'mongoose'
 
 const numberValidator = (number) => {
   const regex = /^\d{2,3}-\d+$/
@@ -17,7 +17,7 @@ const personSchema = new mongoose.Schema({
     minLength: 8,
     validate: {
       validator: numberValidator,
-      message: props => `invalid! Format must be XX-XXX... or XXX-XXX...`
+      message: () => 'invalid! Format must be XX-XXX... or XXX-XXX...'
     }
   },
 })

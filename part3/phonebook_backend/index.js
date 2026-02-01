@@ -14,8 +14,7 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 app.get('/api/persons', (req, res, next) => {
   Person.find({}).then(persons => {
     res.json(persons)
-  })
-  .catch(error => next(error))
+  }).catch(error => next(error))
 })
 
 app.get('/api/persons/:id', (req, res, next) => {
@@ -27,16 +26,15 @@ app.get('/api/persons/:id', (req, res, next) => {
     else {
       res.status(404).json({ error: 'not found' })
     }
-  })
-  .catch(error => next(error))
+  }).catch(error => next(error))
 })
 
 app.post('/api/persons', (req, res, next) => {
   const body = req.body
 
   if (!body.name || !body.number) {
-    return res.status(400).json({ 
-      error: 'name or number is missing' 
+    return res.status(400).json({
+      error: 'name or number is missing'
     })
   }
 
@@ -47,8 +45,7 @@ app.post('/api/persons', (req, res, next) => {
 
   newPerson.save().then(savedPerson => {
     res.json(savedPerson)
-  })
-  .catch(error => next(error))
+  }).catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (req, res, next) => {
@@ -71,8 +68,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
   const id = req.params.id
   Person.findByIdAndDelete(id).then(() => {
     res.status(204).end()
-  })
-  .catch(error => next(error))
+  }).catch(error => next(error))
 })
 
 app.get('/info', (req, res, next) => {
@@ -80,8 +76,7 @@ app.get('/info', (req, res, next) => {
     const entries = persons.length
     const date = new Date()
     res.send(`<p>Phonebook has info for ${entries} people</p><p>${date}</p>`)
-  })
-  .catch(error => next(error))
+  }).catch(error => next(error))
 })
 
 
