@@ -36,7 +36,15 @@ const initialBlogs = [
 ]
 
 const getAllBlogs = async () => {
-  return await Blog.find({})
+  const blogs = await Blog.find({})
+  return blogs.map(blog => blog.toJSON())
 }
 
-export default { initialBlogs, getAllBlogs }
+const getNonExistingId = async () => {
+  const blog = new Blog({ title: 'abc', url: 'http://example.com' })
+  await blog.save()
+  await blog.deleteOne()
+  return blog._id.toString()
+}
+
+export default { initialBlogs, getAllBlogs, getNonExistingId }
