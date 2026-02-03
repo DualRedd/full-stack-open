@@ -41,7 +41,7 @@ const getAllBlogs = async () => {
 }
 
 const getNonExistingId = async () => {
-  const blog = new Blog({ title: 'abc', url: 'http://example.com' })
+  const blog = new Blog({ title: 'abc', url: 'http://example.com', user: '6982357ecc6f3edf60964d87' })
   await blog.save()
   await blog.deleteOne()
   return blog._id.toString()

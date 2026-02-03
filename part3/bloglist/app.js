@@ -3,7 +3,10 @@ import mongoose from 'mongoose'
 import config from './utils/config.js'
 import logger from './utils/logger.js'
 import middleware from './utils/middleware.js'
+import loginRouter from './controllers/login.js'
+import usersRouter from './controllers/users.js'
 import blogsRouter from './controllers/blogs.js'
+
 
 const app = express()
 
@@ -18,7 +21,10 @@ mongoose.connect(config.MONGODB_URI, { family: 4 })
 
 app.use(express.json())
 app.use(middleware.requestLogger)
+app.use(middleware.tokenExtractor)
 
+app.use("/api/login", loginRouter)
+app.use("/api/users", usersRouter)
 app.use("/api/blogs", blogsRouter)
 
 app.use(middleware.unknownEndpoint)

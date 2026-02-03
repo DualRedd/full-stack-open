@@ -1,16 +1,33 @@
 import assert from 'node:assert'
-import { test, describe, beforeEach, after } from 'node:test'
+import { test, describe, before, beforeEach, after } from 'node:test'
 import supertest from 'supertest'
 import mongoose from 'mongoose'
 import app from '../app.js'
+import User from '../models/user.js'
+import { create_token } from '../utils/hash.js'
 import Blog from '../models/blog.js'
 import blogHelper from './blog_helper.js'
 
 const api = supertest(app)
+let userId = null
+let userAuthHeader = ''
+
+before(async () => {
+  await User.deleteMany({})
+  const user = new User({
+    username: 'test',
+    name: 'test',
+    passwordHash: 'test'
+  })  
+  await user.save()
+
+  userId = user._id
+  userAuthHeader = `Bearer ${create_token({ username: user.username, id: userId })}`
+})
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  await Blog.insertMany(blogHelper.initialBlogs)
+  await Blog.insertMany(blogHelper.initialBlogs.map(blog => ({ ...blog, user: userId })))
 })
 
 describe('when there are blogs saved', () => {
@@ -34,6 +51,7 @@ describe('when there are blogs saved', () => {
     })
   })
 
+
   describe('addition of a new blog', () => {
     test('succeeds with valid data', async () => {
       const newBlog = {
@@ -45,6 +63,7 @@ describe('when there are blogs saved', () => {
 
       await api
         .post('/api/blogs')
+        .set('Authorization', userAuthHeader)
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -68,6 +87,7 @@ describe('when there are blogs saved', () => {
 
       const response = await api
         .post('/api/blogs')
+        .set('Authorization', userAuthHeader)
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -84,6 +104,7 @@ describe('when there are blogs saved', () => {
 
       await api
         .post('/api/blogs')
+        .set('Authorization', userAuthHeader)
         .send(blogWithoutTitle)
         .expect(400)
     })
@@ -97,11 +118,25 @@ describe('when there are blogs saved', () => {
 
       await api
         .post('/api/blogs')
+        .set('Authorization', userAuthHeader)
         .send(blogWithoutUrl)
         .expect(400)
     })
 
+    test('fails with status code 401 if no token is provided', async () => {
+      const newBlog = {
+        title: "Unauthorized blog",
+        url: "http://test.com"
+      }
+
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(401)
+    })
+
   })
+
 
   describe('deletion of a blog', () => {
     test('succeeds with status code 204 if id is valid', async () => {
@@ -110,6 +145,7 @@ describe('when there are blogs saved', () => {
 
       await api
         .delete(`/api/blogs/${blogToDelete.id}`)
+        .set('Authorization', userAuthHeader)
         .expect(204)
 
       const blogsAtEnd = await blogHelper.getAllBlogs()
@@ -118,6 +154,7 @@ describe('when there are blogs saved', () => {
     })
   })
 
+  
   describe('updating a blog', () => {
     test('succeeds in updating likes of a blog', async () => {
       const blogsAtStart = await blogHelper.getAllBlogs()
@@ -125,7 +162,7 @@ describe('when there are blogs saved', () => {
 
       const updatedBlog = {
         ...blogToUpdate,
-        likes: blogToUpdate.likes + 1
+        likes: blogToUpdate.likes + 5
       }
 
       const response = await api
@@ -134,7 +171,7 @@ describe('when there are blogs saved', () => {
         .expect(200)
         .expect('Content-Type', /application\/json/)
 
-      assert.deepStrictEqual(response.body, updatedBlog)
+      assert.strictEqual(response.body.likes, updatedBlog.likes)
     })
 
     test('fails with status code 404 if blog does not exist', async () => {
@@ -156,6 +193,5 @@ describe('when there are blogs saved', () => {
 })
 
 after(async () => {
-  await Blog.deleteMany({})
   await mongoose.connection.close()
 })

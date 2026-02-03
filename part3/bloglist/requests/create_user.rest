@@ -1,0 +1,18 @@
+POST http://localhost:3001/api/users HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "haapijon",
+    "name": "Joni Haapiainen",
+    "password": "sekret"
+}
+
+###
+POST http://localhost:3001/api/users HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "john",
+    "name": "NONE",
+    "password": "sekret"
+}
