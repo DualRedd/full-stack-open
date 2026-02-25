@@ -10,7 +10,7 @@ const validate_password_format = password => {
 
 usersRouter.post('/', async (request, response) => {
   const { username, name, password } = request.body
-
+  
   if (!validate_password_format(password)) {
     return response.status(400).json({ error: 'password must be atleast 3 characters' })
   }
