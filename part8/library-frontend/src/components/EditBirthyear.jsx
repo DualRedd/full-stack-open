@@ -9,8 +9,6 @@ const EditBirthyear = ({ authors }) => {
 
   const submit = async (event) => {
     event.preventDefault()
-    console.log('edit author...')
-    console.log(name, parseInt(born))
     await editAuthor({ variables: { name, setBornTo: parseInt(born) } })
     setBorn('')
   }
